@@ -71,7 +71,9 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
                     <TrendingUpIcon color="gray" size={18} />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">8.9</div>
+                    <div className="text-2xl font-bold">
+                      {metrics?.data[0].projecao}
+                    </div>
                     <p className="text-xs text-muted-foreground">
                       +1 comparado ao ano passado
                     </p>
@@ -99,13 +101,15 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
                     <BadgePercentIcon color="gray" size={18} />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">98,234%</div>
+                    <div className="text-2xl font-bold">
+                      {metrics?.data[0].taxa_aprovacao}
+                    </div>
                     <p className="text-xs text-muted-foreground">
                       +3% comparado ao ano passado
                     </p>
                   </CardContent>
                 </Card>
-                <Card className="w-96">
+                {/* <Card className="w-96">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
                       Active Now
@@ -129,7 +133,7 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
                       +201 since last hour
                     </p>
                   </CardContent>
-                </Card>
+                </Card> */}
               </div>
               <ScrollBar orientation="horizontal" />
             </ScrollArea>
@@ -147,11 +151,32 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
                   <CardTitle>Avaliações encontradas</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="w-full h-full">
+                  <ScrollArea className="w-full h-80">
+                    <div className="flex flex-row py-2 gap-3 text-center">
+                      <p className="flex-1">Ano</p>
+                      <p className="flex-1">Séries</p>
+                      <p className="flex-1">Rendimento</p>
+                      <p className="flex-1">Média saeb</p>
+                    </div>
                     {metrics?.data.map((metric) => (
-                      <p key={metric.id_metrica}>
-                        {metric.ano} - {metric.anos_escolares}
-                      </p>
+                      <div
+                        className="flex flex-row py-2 gap-3 text-center"
+                        key={metric.id_metrica}
+                      >
+                        <p className="flex-1">{metric.ano}</p>
+                        <p className="flex-1">{metric.anos_escolares}</p>
+                        <p className="flex-1">
+                          {(Number(metric.indicador_rendimento) * 100).toFixed(
+                            0
+                          )}
+                          %
+                        </p>
+                        <p className="flex-1">
+                          {Number(metric.nota_saeb_media_padronizada).toFixed(
+                            2
+                          )}
+                        </p>
+                      </div>
                     ))}
                   </ScrollArea>
                 </CardContent>
