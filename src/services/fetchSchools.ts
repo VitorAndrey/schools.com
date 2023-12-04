@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { School } from "@/models";
 
-const url = "http://localhost:3333";
+const url = "https://schools-46m5.onrender.com";
 
 export async function fetchSchools(): Promise<School[] | null> {
   try {

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url = "http://localhost:3333";
+const url = "https://schools-46m5.onrender.com";
 
 import { Metric } from "@/models";
 
