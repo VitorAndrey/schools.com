@@ -19,10 +19,14 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useEffect, useState } from "react";
 import { Metric } from "@/models";
 import { fetchMetrics } from "@/services/fetchMetrics";
+import { Button } from "@/components/ui/button";
+
+type AnoEscolar = "finais(6-9)" | "iniciais(1-5)" | "todos(1-4)";
 
 export default function DashboardPage({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [metrics, setMetrics] = useState<Metric | null>(null);
+  const [anoEscolar, setAnoEscolar] = useState<AnoEscolar>("finais(6-9)");
 
   async function handleFetchMetrics() {
     setIsLoading(true);
@@ -31,7 +35,6 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
       const data = await fetchMetrics(params.id);
 
       setMetrics(data);
-      console.log(data);
     } catch (error) {
     } finally {
       setIsLoading(false);
@@ -43,14 +46,30 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // if (isLoading) return <p>Carregando...</p>;
-
   return (
     <div className="hidden flex-col md:flex">
+      <div className="flex-row p-4 flex gap-4">
+        <Button
+          variant="secondary"
+          onClick={() => setAnoEscolar("finais(6-9)")}
+        >
+          finais(6-9)
+        </Button>
+        <Button
+          variant="secondary"
+          onClick={() => setAnoEscolar("iniciais(1-5)")}
+        >
+          iniciais(1-5)
+        </Button>
+        <Button variant="secondary" onClick={() => setAnoEscolar("todos(1-4)")}>
+          todos(1-4)
+        </Button>
+      </div>
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
-            Dashboard - {metrics && metrics.nome ? metrics.nome : "..."}
+            Dashboard - {metrics && metrics.nome ? metrics.nome : "..."} -{" "}
+            {anoEscolar}
           </h2>
           <div className="flex items-center space-x-2"></div>
         </div>
@@ -66,31 +85,32 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
                 <Card className="w-96">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Última Projeção
+                      Último Idaeb
                     </CardTitle>
                     <TrendingUpIcon color="gray" size={18} />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {metrics?.data[0].projecao}
+                      {metrics?.data.ideb[anoEscolar][0].nota}
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      +1 comparado ao ano passado
-                    </p>
+                    <p className="text-xs text-muted-foreground">...</p>
                   </CardContent>
                 </Card>
                 <Card className="w-96">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Colocação no município
+                      Nota Saeb Lingua Portuguesa
                     </CardTitle>
                     <BarChartHorizontalIcon color="gray" size={16} />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold"># 3</div>
-                    <p className="text-xs text-muted-foreground">
-                      - 1 compadaro ao ano passado
-                    </p>
+                    <div className="text-2xl font-bold">
+                      {
+                        metrics?.data.nota_saeb_lingua_portuguesa[anoEscolar][0]
+                          .nota
+                      }
+                    </div>
+                    <p className="text-xs text-muted-foreground">...</p>
                   </CardContent>
                 </Card>
                 <Card className="w-96">
@@ -102,83 +122,57 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {metrics?.data[0].taxa_aprovacao}
+                      {metrics?.data.indicador_rendimento[anoEscolar][0].nota}
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      +3% comparado ao ano passado
-                    </p>
+                    <p className="text-xs text-muted-foreground">...</p>
                   </CardContent>
                 </Card>
-                {/* <Card className="w-96">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Active Now
-                    </CardTitle>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      className="h-4 w-4 text-muted-foreground"
-                    >
-                      <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                    </svg>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">+573</div>
-                    <p className="text-xs text-muted-foreground">
-                      +201 since last hour
-                    </p>
-                  </CardContent>
-                </Card> */}
               </div>
               <ScrollBar orientation="horizontal" />
             </ScrollArea>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-8">
               <Card className="col-span-4">
                 <CardHeader>
-                  <CardTitle>Overview</CardTitle>
+                  <CardTitle>Ideb</CardTitle>
                 </CardHeader>
                 <CardContent className="pl-2">
-                  <Overview />
+                  <Overview
+                    data={metrics?.data.ideb[anoEscolar]}
+                    color="#4bc4bc"
+                  />
                 </CardContent>
               </Card>
-              <Card className="col-span-3">
+              <Card className="col-span-4">
                 <CardHeader>
-                  <CardTitle>Avaliações encontradas</CardTitle>
+                  <CardTitle>Indicador Rendimento</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ScrollArea className="w-full h-80">
-                    <div className="flex flex-row py-2 gap-3 text-center">
-                      <p className="flex-1">Ano</p>
-                      <p className="flex-1">Séries</p>
-                      <p className="flex-1">Rendimento</p>
-                      <p className="flex-1">Média saeb</p>
-                    </div>
-                    {metrics?.data.map((metric) => (
-                      <div
-                        className="flex flex-row py-2 gap-3 text-center"
-                        key={metric.id_metrica}
-                      >
-                        <p className="flex-1">{metric.ano}</p>
-                        <p className="flex-1">{metric.anos_escolares}</p>
-                        <p className="flex-1">
-                          {(Number(metric.indicador_rendimento) * 100).toFixed(
-                            0
-                          )}
-                          %
-                        </p>
-                        <p className="flex-1">
-                          {Number(metric.nota_saeb_media_padronizada).toFixed(
-                            2
-                          )}
-                        </p>
-                      </div>
-                    ))}
-                  </ScrollArea>
+                <CardContent className="pl-2">
+                  <Overview
+                    data={metrics?.data.indicador_rendimento[anoEscolar]}
+                    color="#b88f4c"
+                  />
+                </CardContent>
+              </Card>
+              <Card className="col-span-4">
+                <CardHeader>
+                  <CardTitle>Saeb Lingua portuguesa</CardTitle>
+                </CardHeader>
+                <CardContent className="pl-2">
+                  <Overview
+                    data={metrics?.data.nota_saeb_lingua_portuguesa[anoEscolar]}
+                    color="#ae4091"
+                  />
+                </CardContent>
+              </Card>
+              <Card className="col-span-4">
+                <CardHeader>
+                  <CardTitle>Taxa aprovação</CardTitle>
+                </CardHeader>
+                <CardContent className="pl-2">
+                  <Overview
+                    data={metrics?.data.taxa_aprovacao[anoEscolar]}
+                    color="#23d78e"
+                  />
                 </CardContent>
               </Card>
             </div>

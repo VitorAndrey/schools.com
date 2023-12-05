@@ -7,19 +7,25 @@ export type School = {
   ensino?: string;
 };
 
-export type Metric = {
+interface MetricData {
+  ano: string;
+  nota: string | null; // Pode ser um número ou null
+}
+
+// Definição do tipo para os diferentes tipos de métricas (ideb, taxa_aprovacao, indicador_rendimento, nota_saeb_lingua_portuguesa)
+interface Years {
+  "iniciais(1-5)": MetricData[];
+  "finais(6-9)": MetricData[];
+  "todos(1-4)": MetricData[];
+}
+
+// Definição do tipo para os dados completos
+export interface Metric {
   nome: string;
   data: {
-    id_metrica?: string;
-    id_escola?: string;
-    ano?: string;
-    ensino?: string;
-    anos_escolares?: string;
-    taxa_aprovacao?: string;
-    indicador_rendimento?: string;
-    nota_saeb_matematica?: string;
-    nota_saeb_lingua_portuguesa?: string;
-    nota_saeb_media_padronizada?: string;
-    projecao?: string;
-  }[];
-};
+    ideb: Years;
+    taxa_aprovacao: Years;
+    indicador_rendimento: Years;
+    nota_saeb_lingua_portuguesa: Years;
+  };
+}
